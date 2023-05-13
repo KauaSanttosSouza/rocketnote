@@ -1,4 +1,4 @@
-const knex = require("../database/knex/index")
+const knex = require("../database/knex")
 
 class NotesController{
    async create(request, response){
@@ -31,17 +31,17 @@ class NotesController{
       await knex("tags").insert(tagsInsert);
 
       response.json();
-   };
+   }
 
-   async Show(request, response){
-      const {id} = request.params;
+   async show(request, response){
+      const { id } = request.params;
 
-      const notes = knex("notes").where({ id }).first()
-      const tags = knex("tags").where({ id }).orderBy("name")
-      const links = knex("links").where({ id }).orderBy("created_at")
+      const note = await knex("notes").where({ id }).first();
+      const tags = await knex("tags").where({ note_id: id }).orderBy("name")
+      const links = await knex("links").where({ note_id: id }).orderBy("created_at")
 
       return response.json({
-         ...notes,
+         note,
          tags,
          links
       })
